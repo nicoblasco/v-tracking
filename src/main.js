@@ -51,6 +51,7 @@ import i18n_messages from './i18n.json'
 |     CUSTOM COMPONENTS    |
 \* ═ ═ ═ ═ ═ ═ ═ ═ ═ */
 import PageHeader from './components/PageHeader.vue'
+import '@/mixins/shared'
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({ 

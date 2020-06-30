@@ -45,13 +45,13 @@
 
 		<el-dialog  :title=formTitle  :visible.sync="dialogFormVisible">
 			<el-form :model="modelo" :rules="rules" ref="modelo"  label-width="120px">
-				<el-form-item v-bind:label="objectAttr('Id').name" v-if="this.editedIndex == 0 && objectAttr('Id').visible"  :label-width="formLabelWidth"  prop="id">
+				<el-form-item v-bind:label="objectAttr('id').name" v-if="this.editedIndex == 0 && objectAttr('Id').visible"  :label-width="formLabelWidth"  prop="id">
 					<el-input v-model="modelo.id" auto-complete="off" :disabled="!objectAttr('Id').enabled"></el-input>
 				</el-form-item>				
-				<el-form-item v-bind:label="objectAttr('Description').name" :label-width="formLabelWidth" prop="description" v-if="objectAttr('Description').visible" :required="objectAttr('Description').required">
+				<el-form-item v-bind:label="objectAttr('description').name" :label-width="formLabelWidth" prop="description" v-if="objectAttr('Description').visible" :required="objectAttr('Description').required">
 					<el-input v-model="modelo.description" auto-complete="off" :disabled="!objectAttr('Description').enabled"></el-input>
 				</el-form-item>
-				<el-form-item v-bind:label="objectAttr('Enabled').name"  v-if="objectAttr('Enabled').visible" :disabled="!objectAttr('Enabled').enabled">
+				<el-form-item v-bind:label="objectAttr('enabled').name"  v-if="objectAttr('enabled').visible" :disabled="!objectAttr('enabled').enabled">
 					<el-switch v-model="modelo.enabled"></el-switch>
 				</el-form-item>				
 			</el-form>			
@@ -72,7 +72,6 @@ export default {
 	data(){
 		return {
 				URL_GET: 'api/VehicleBrands',
-				URL_GET_ACTIONS: 'api/SecurityRoleActions/GetConfigScreenByCompanyByScreen',
 				URL_CREATE: 'api/VehicleBrands/Create',
 				URL_UPDATE: 'api/VehicleBrands/Update',
 				URL_DELETE: 'api/VehicleBrands/Delete',					
@@ -127,10 +126,21 @@ export default {
 			}		
 	},
         created () {
-			this.user = this.$store.getters.getUser;
-			this.get();
-			this.fields = this.$store.getters.getUserConfigurationFields(this.name);				
-			this.getActions();					
+			try {
+				this.screen= this.$store.getters.userProfile.role.screens.filter(x=>x.path===this.$route.fullPath)[0];			
+				if (this.screen !=null)
+				{
+					this.fields = this.screen.fields;				
+					this.actions = this.screen.actions;	
+					this.get();
+				}
+				else
+					this.showError("No se pudo recuperar la configuración de la pantalla");
+			} catch (error) {
+				this.showError(error);
+			}
+
+
         }, 	
 	computed: {
 		formTitle() {
@@ -140,41 +150,32 @@ export default {
 
 	methods: {
 		objectAttr(fieldName){
-			return  this.fields.configScreenFields.find(conf => conf.fieldName === fieldName)
+			return  this.fields.find(conf => conf.field === fieldName)
 		},
 		canCreate(){
 			if (this.actions=='')			
 				return false;
 			else
-				return  this.actions.find(x => x.actionCode === "CREATE")
+				return  this.actions.find(x => x.code === "CREATE")
 		},
 		canEdit(){
 			if (this.actions=='')			
 				return false;
 			else
-				return  this.actions.find(x => x.actionCode === "EDIT")
+				return  this.actions.find(x => x.code === "EDIT")
 		},
 		canDelete(){
 			if (this.actions=='')			
 				return false;
 			else
-				return  this.actions.find(x => x.actionCode === "DELETE")
+				return  this.actions.find(x => x.code === "DELETE")
 		},						
-		getActions(){
-			let me = this;
-			let url = this.URL_GET_ACTIONS+"/"+me.user.Rol+"/"+me.fields.id;
-            axios.get(url).then (function(response){				
-                me.actions = response.data;
-            }).catch (function (error){
-					me.showError();
-            });
-		},
 		get(){
             let me = this;
             axios.get(this.URL_GET).then (function(response){
                 me.datos = response.data;
             }).catch (function (error){
-					me.showError();
+					me.showError(error);
             });
         },
 		save(formName){		  
@@ -193,7 +194,7 @@ export default {
 					 me.showOk();
                      
                 }).catch(function(error){
-                    me.showError();
+                    me.showError(error);
                 });
                 
             } else {
@@ -207,7 +208,7 @@ export default {
 					 me.showOk();
                      
                 }).catch(function(error){
-						me.showError();
+						me.showError(error);
 				});
 
 			}
@@ -233,7 +234,7 @@ export default {
 					 me.showOk();
                      
                 }).catch(function(error){
-						me.showError();
+						me.showError(error);
 				});
 
 			}).catch(() => {
@@ -266,31 +267,6 @@ export default {
             this.modelo.id="";
             this.modelo.description="";
             this.editedIndex=-1;
-		},	
-		showError(){
-			//Aqui debe guardar y mostrar el ide del error
-			this.$message({
-						showClose: true,
-						type: 'error',
-						message: 'Ha ocurrido un error'
-					});
-		},
-
-		showOk(){
-			//Aqui debe guardar y mostrar el ide del error
-			this.$message({
-						showClose: true,
-						type: 'success',
-						message: 'Operación Exitosa'
-					});
-		},	
-		showWarning(mensaje){
-			//Aqui debe guardar y mostrar el ide del error
-			this.$message({
-						showClose: true,
-						type: 'warning',
-						message: mensaje
-					});
 		}
             			  	
  	}
