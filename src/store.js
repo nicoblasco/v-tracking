@@ -75,13 +75,35 @@ export default new Vuex.Store({
 		},		
 		setSplashScreen(state, payload) {
 			state.splashScreen = payload
-		}
+		},
+		sortBy: function(sortKey){
+			debugger
+			const names = this.fields
+			names.sort((a, b) => {
+				var compare = 0;
+				if (a[sortKey] > b[sortKey]) {
+					compare = 1;
+				} else if (b[sortKey] > a[sortKey]) {
+					compare = -1;
+				}
+				return compare;
+			});
+			this.fields = names;
+		},		
 	},
 	actions: {
 		guardarToken({commit},token){  
 			commit("setToken", token)
 			commit("setUsuario", decode(token))
-			localStorage.setItem("token", token)
+		    localStorage.setItem("token", token)
+			if (token){	
+				axios.get(URL_USER_GETCONF + this.state.usuario.Id).then (function(response){				
+					commit("setConfiguration",response.data)
+				}).catch (function (error){
+						console.log(error)
+				})
+			}
+			
 		  },
 		  autoLogin({commit, dispatch}){		
 			let token = localStorage.getItem("token")
@@ -103,7 +125,7 @@ export default new Vuex.Store({
 			localStorage.removeItem("token")
 			router.push({name: 'login'})
 		  },
-		  fetchUserConfig({commit,state}) {
+		  fetchUserConfig({commit,state}) {			  
 			axios.get(URL_USER_GETCONF + state.usuario.Id).then (function(response){				
 				commit("setConfiguration",response.data)
 			}).catch (function (error){

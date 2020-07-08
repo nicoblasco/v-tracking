@@ -156,7 +156,10 @@ export default {
 	},
 	beforeDestroy() {
 		window.removeEventListener('resize', this.resizeOpenNav);
-	}
+	},
+    errorCaptured (err, vm, info) {
+		 this.showError(err); 
+	},
 }
 </script>
 

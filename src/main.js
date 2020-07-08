@@ -52,6 +52,7 @@ import i18n_messages from './i18n.json'
 \* ═ ═ ═ ═ ═ ═ ═ ═ ═ */
 import PageHeader from './components/PageHeader.vue'
 import '@/mixins/shared'
+//import './vue-error-handler'
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({ 
@@ -65,6 +66,7 @@ Vue.component('l-tile-layer', Vue2Leaflet.LTileLayer)
 Vue.component('pageheader', PageHeader)
 
 Vue.config.productionTip = false
+
 
 
 //axios.defaults.baseURL ='http://104.41.24.57/'
@@ -102,6 +104,7 @@ Vue.component('vue-scroll', VuePerfectScrollbar)
 Vue.directive('affix', Affix)
 
 const i18n = new VueI18n({ locale: 'ar', messages:i18n_messages })
+
 
 new Vue({
 	i18n,

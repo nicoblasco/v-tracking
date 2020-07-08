@@ -19,7 +19,6 @@ Vue.mixin({
 					'Path': path,
 					'Error': mensaje
             }).then(function(response){
-				debugger
 				me.$message({
 					showClose: true,
 					type: 'error',

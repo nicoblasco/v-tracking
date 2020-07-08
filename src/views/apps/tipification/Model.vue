@@ -48,6 +48,17 @@
 				<el-form-item v-if="editedIndex !=-1 && fields[FIELD_ID].visible" v-bind:label="fields[FIELD_ID].name" :label-width="formLabelWidth" >
 					<el-input v-model="modelo.id" auto-complete="off" :disabled="!fields[FIELD_ID].enabled"></el-input>
 				</el-form-item>	
+				<el-form-item v-if="fields[FIELD_BRANDID].visible" v-bind:label="fields[FIELD_BRANDID].name" :label-width="formLabelWidth"  prop="vehicleBrandId"
+					:rules="[{ required: fields[FIELD_BRANDID].required, message:  'Por favor ingrese: '+fields[FIELD_BRANDID].name, trigger: 'blur'   }]">
+                    <el-select v-model="modelo.vehicleBrandId" :placeholder= fields[FIELD_BRANDID].description>
+                    <el-option
+                        v-for="item in brands"
+                        :key="item.id"
+                        :label="item.description"
+                        :value="item.id">
+                    </el-option>                    
+                    </el-select>                    
+                </el-form-item>
 				<el-form-item v-if="fields[FIELD_DESCRIPTION].visible" v-bind:label="fields[FIELD_DESCRIPTION].name" :label-width="formLabelWidth"  prop="description"
 					:rules="[{ required: fields[FIELD_DESCRIPTION].required, message:  'Por favor ingrese: '+fields[FIELD_DESCRIPTION].name, trigger: 'blur'   },{ min: 1, max: 50, message: 'Debe tener entre 1 y 50 caracteres' }]">
 					<el-input v-model="modelo.description" auto-complete="off" :disabled="!fields[FIELD_DESCRIPTION].enabled">
@@ -71,50 +82,52 @@
 
 import axios from 'axios'
 export default {
-	name: 'VehicleBrand',
+	name: 'VehicleModel',
 	data(){
 		return {
-				URL_GET: 'api/VehicleBrands/',
-				URL_CREATE: 'api/VehicleBrands/Create',
-				URL_UPDATE: 'api/VehicleBrands/Update',
-				URL_DELETE: 'api/VehicleBrands/Delete',	
-				//Estan ordenados alfabeticamente
-				FIELD_DESCRIPTION: 0,
+				URL_GET: 'api/VehicleModels/',
+				URL_CREATE: 'api/VehicleModels/Create',
+				URL_UPDATE: 'api/VehicleModels/Update',
+                URL_DELETE: 'api/VehicleModels/Delete',	
+                URL_GET_BRANDS: 'api/VehicleBrands/',				               
+                FIELD_BRANDID: 3,
+                FIELD_DESCRIPTION: 0,
 				FIELD_ENABLED: 1,
-				FIELD_ID: 2,								
+				FIELD_ID: 2, 
 				dialogFormVisible: false,
 				editedIndex: -1,
                 valida: 0,
                 validaMensaje: [],	
 				formLabelWidth: '120px',
 				fields: null,
-				screen: null,
 				datos: [],
 				actions:'',
 				user:null,
 				modelo: null,
-				columns: null,
-				title: '',
-				company: null
-
+                columns: null,
+                brands: null,
+                title: '',
+				screen: null,
+				companyId: null
 			}		
 	},
         created () {			
 			try {
 				this.modelo = this.$route.meta.modelo;
-				this.companyId = this.$store.getters.user.CompanyId;
 				this.columns = this.$route.meta.columns;
-				this.screen= this.$store.getters.userProfile.role.screens.filter(x=>x.path===this.$route.fullPath)[0];			
+				this.companyId = this.$store.getters.user.CompanyId;
+                this.screen= this.$store.getters.userProfile.role.screens.filter(x=>x.path===this.$route.fullPath)[0];			                
 				if (this.screen !=null)
 				{
-					this.title = this.screen.description;
+                    this.title = this.screen.description;
 					this.fields = this.screen.fields.slice().sort(function(a, b) {
 						var textA = a.fieldName.toUpperCase()
 						var textB = b.fieldName.toUpperCase()
 						return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
-						});				
+					});				
 					this.actions = this.screen.actions;	
-					this.get();
+                    this.get();
+                    this.getBrands();
 				}
 				else
 					this.showError("No se pudo recuperar la configuración de la pantalla");
@@ -127,11 +140,10 @@ export default {
 	computed: {
 		formTitle() {
 			return this.editedIndex === -1? 'Crear '+this.title:'Editar '+this.title
-		}
-
+		}	
 	},
 
-	methods: {		
+	methods: {
 		canCreate(){
 			if (this.actions=='')			
 				return false;
@@ -159,6 +171,15 @@ export default {
 					me.showError(error);
             });
         },
+		getBrands(){
+			let me = this;
+			let url = this.URL_GET_BRANDS+ parseInt(me.companyId);
+            axios.get(url).then (function(response){
+                me.brands = response.data;
+            }).catch (function (error){
+					me.showError(error);
+            });
+        },        
 		save(formName){		  
 		  this.$refs[formName].validate((valid) => {
           if (valid) {
@@ -167,8 +188,8 @@ export default {
                 let me = this;
                 axios.put(this.URL_UPDATE,{
                     'Id': me.modelo.id,
-					'Description':me.modelo.description,
-					'CompanyId': me.companyId
+					'Description':me.modelo.description,					
+					'VehicleBrandId':me.modelo.vehicleBrandId
                 }).then(function(response){
                      me.close();
                      me.get();   
@@ -182,7 +203,8 @@ export default {
             } else {
 				let me = this;
                 axios.post(this.URL_CREATE,{
-                    'Description':me.modelo.description
+                    'Description':me.modelo.description,
+                    'VehicleBrandId':me.modelo.vehicleBrandId
                 }).then(function(response){
                      me.close();
                      me.get();   
@@ -236,7 +258,8 @@ export default {
 		},
 		edit(objeto) {		
 			 this.modelo.id = objeto.id; 
-			 this.modelo.description= objeto.description
+			 this.modelo.description= objeto.description;
+			 this.modelo.vehicleBrandId = objeto.vehicleBrandId;
 			 this.dialogFormVisible = true;
 			 this.editedIndex=0;
 		},
@@ -246,7 +269,8 @@ export default {
 		},
         clean(){
             this.modelo.id="";
-            this.modelo.description="";
+			this.modelo.description="";
+			this.modelo.vehicleBrandId=null;
             this.editedIndex=-1;
 		}
             			  	

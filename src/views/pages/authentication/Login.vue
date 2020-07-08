@@ -65,14 +65,20 @@ export default {
                 this.$router.push({ name: 'dashboard' })
             })
             .catch(err => {
-                debugger
-                if (err.response.status==400){
-                    this.error="No es un email válido";
-                } else if (err.response.status==404){
-                    this.error="No existe el usuario o sus datos son incorrectos";
-                }else{
-                    this.error="Ocurrió un error";
-                }
+				if (err.response!=undefined)
+				{
+					if (err.response.status==400){
+						this.error="No es un email válido";
+					} else if (err.response.status==404){
+						this.error="No existe el usuario o sus datos son incorrectos";
+					}else{
+						this.error="Ocurrió un error";
+					}
+				}
+				else
+				{
+					this.error="Ocurrió un error desconocido";
+				}
             })
         }
 
