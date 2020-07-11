@@ -9,7 +9,7 @@
 		<transition name="fade">
 			<div class="splash-screen" v-if="splashScreen">
 				<div class="wrap">
-					<img src="dist/logo.svg" class="logo" alt="logo">
+					<img src="dist/logosale.svg" class="logo" alt="logo">
 					<img src="dist/Ripple-2s-200px.gif" alt="loading-image">
 				</div>
 			</div>

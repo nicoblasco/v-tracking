@@ -8,14 +8,14 @@ Vue.mixin({
 			let mensaje = "";
 			let userId = this.$store.getters.user.Id;
 			let path = this.$route.fullPath;
-			let company = this.$store.getters.user.CompanyId;			
+			let company = this.$store.getters.user.CompanyId;		
 			if (mensj!=null)
 				mensaje=': '+ mensj;
 
 
             axios.post('api/LogErrors/Create',{
-					'CompanyId': company,
-					'SecurityUserId': userId,
+					'CompanyId': parseInt(company),
+					'SecurityUserId': parseInt(userId),
 					'Path': path,
 					'Error': mensaje
             }).then(function(response){

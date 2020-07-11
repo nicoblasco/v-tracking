@@ -799,6 +799,10 @@ export default {
 
             //Recorro los atributos de la pantalla
             me.fieldScreens(screen.id).forEach(field => {
+              let orden =0;
+              if (field.orden!=null){
+                orden=parseInt(field.orden);
+              }
               let objField= {
                 ConfigScreenId: screen.id,
                 Name: field.name,
@@ -807,6 +811,7 @@ export default {
                 DefaultValue: field.defaultValue,
                 Enabled: field.enabled,
                 FieldName: field.fieldName,
+                Orden: orden,
                 SystemScreenFieldId: field.id
                 }                
                 objScreen.ConfigScreenFields.push(objField);
@@ -925,6 +930,7 @@ export default {
                 DefaultValue: field.defaultValue,
                 Enabled: field.enabled,
                 FieldName: field.fieldName,
+                Orden: parseint(field.orden),
                 SystemScreenFieldId: field.id
                 }                
                 objScreen.ConfigScreenFields.push(objField);

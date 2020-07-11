@@ -153,11 +153,12 @@ const auth = {
 	}
 }
 
+
 router.beforeEach((to, from, next) => {
 	let authrequired = false
 	if(to && to.meta && to.meta.auth)
 		authrequired = true
-
+		
 	//console.log('authrequired', authrequired, to.name)
 
 	if(authrequired) {

@@ -64,7 +64,7 @@ export default new Vuex.Store({
 			state.logged = false
 			state.token=null
 			state.usuario=null
-			localStorage.removeItem("token")			
+			localStorage.removeItem("tokenSales")			
 		},
 		setToken (state,token){ 
 			state.token=token
@@ -95,8 +95,9 @@ export default new Vuex.Store({
 		guardarToken({commit},token){  
 			commit("setToken", token)
 			commit("setUsuario", decode(token))
-		    localStorage.setItem("token", token)
+		    localStorage.setItem("tokenSales", token)
 			if (token){	
+				
 				axios.get(URL_USER_GETCONF + this.state.usuario.Id).then (function(response){				
 					commit("setConfiguration",response.data)
 				}).catch (function (error){
@@ -105,8 +106,8 @@ export default new Vuex.Store({
 			}
 			
 		  },
-		  autoLogin({commit, dispatch}){		
-			let token = localStorage.getItem("token")
+		  autoLogin({commit, dispatch}){		  
+			let token = localStorage.getItem("tokenSales")
 			if (token){				
 			  commit("setToken", token)
 			  commit("setUsuario", decode(token))
@@ -122,10 +123,10 @@ export default new Vuex.Store({
 		  salir({commit}){
 			commit("setToken", null)
 			commit("setUsuario", null)
-			localStorage.removeItem("token")
+			localStorage.removeItem("tokenSales")
 			router.push({name: 'login'})
 		  },
-		  fetchUserConfig({commit,state}) {			  
+		  fetchUserConfig({commit,state}) {		
 			axios.get(URL_USER_GETCONF + state.usuario.Id).then (function(response){				
 				commit("setConfiguration",response.data)
 			}).catch (function (error){

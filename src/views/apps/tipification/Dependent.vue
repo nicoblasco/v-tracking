@@ -48,9 +48,9 @@
 				<el-form-item v-if="editedIndex !=-1 && fields[FIELD_ID].visible" v-bind:label="fields[FIELD_ID].name" :label-width="formLabelWidth" >
 					<el-input v-model="modelo.id" auto-complete="off" :disabled="!fields[FIELD_ID].enabled"></el-input>
 				</el-form-item>	
-				<el-form-item v-if="fields[FIELD_BRANDID].visible" v-bind:label="fields[FIELD_BRANDID].name" :label-width="formLabelWidth"  prop="vehicleBrandId"
-					:rules="[{ required: fields[FIELD_BRANDID].required, message:  'Por favor ingrese: '+fields[FIELD_BRANDID].name, trigger: 'blur'   }]">
-                    <el-select v-model="modelo.vehicleBrandId" :placeholder= fields[FIELD_BRANDID].description>
+				<el-form-item v-if="fields[FIELD_PARENT].visible" v-bind:label="fields[FIELD_PARENT].name" :label-width="formLabelWidth"  prop="parentId"
+					:rules="[{ required: fields[FIELD_PARENT].required, message:  'Por favor ingrese: '+fields[FIELD_PARENT].name, trigger: 'blur'   }]">
+                    <el-select v-model="modelo.parentId" :placeholder= fields[FIELD_PARENT].description>
                     <el-option
                         v-for="item in brands"
                         :key="item.id"
@@ -82,18 +82,18 @@
 
 import axios from 'axios'
 export default {
-	name: 'VehicleModel',
+	name: 'Dependent',
 	data(){
 		return {
-				URL_GET: 'api/VehicleModels/',
-				URL_CREATE: 'api/VehicleModels/Create',
-				URL_UPDATE: 'api/VehicleModels/Update',
-                URL_DELETE: 'api/VehicleModels/Delete',	
-                URL_GET_BRANDS: 'api/VehicleBrands/',				               
-                FIELD_BRANDID: 3,
-                FIELD_DESCRIPTION: 0,
-				FIELD_ENABLED: 1,
-				FIELD_ID: 2, 
+				URL_GET: null,
+				URL_CREATE: null,
+				URL_UPDATE: null,
+                URL_DELETE: null,
+                URL_GET_PARENT: null,
+				FIELD_ID: 0,	
+				FIELD_DESCRIPTION: 1,
+				FIELD_ENABLED: 2,
+				FIELD_PARENT: 3,
 				dialogFormVisible: false,
 				editedIndex: -1,
                 valida: 0,
@@ -113,21 +113,26 @@ export default {
 	},
         created () {			
 			try {
+				this.URL_GET= this.$route.meta.URL_GET;
+				this.URL_CREATE= this.$route.meta.URL_CREATE;
+				this.URL_UPDATE= this.$route.meta.URL_UPDATE;
+				this.URL_DELETE= this.$route.meta.URL_DELETE;				
+				this.URL_GET_PARENT= this.$route.meta.URL_GET_PARENT;
 				this.modelo = this.$route.meta.modelo;
 				this.columns = this.$route.meta.columns;
-				this.companyId = this.$store.getters.user.CompanyId;
+				this.companyId = parseInt( this.$store.getters.user.CompanyId);
                 this.screen= this.$store.getters.userProfile.role.screens.filter(x=>x.path===this.$route.fullPath)[0];			                
 				if (this.screen !=null)
 				{
                     this.title = this.screen.description;
 					this.fields = this.screen.fields.slice().sort(function(a, b) {
-						var textA = a.fieldName.toUpperCase()
-						var textB = b.fieldName.toUpperCase()
+						var textA = a.orden
+						var textB = b.orden
 						return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
-					});				
+						});						
 					this.actions = this.screen.actions;	
                     this.get();
-                    this.getBrands();
+                    this.getParent();
 				}
 				else
 					this.showError("No se pudo recuperar la configuración de la pantalla");
@@ -171,9 +176,9 @@ export default {
 					me.showError(error);
             });
         },
-		getBrands(){
+		getParent(){
 			let me = this;
-			let url = this.URL_GET_BRANDS+ parseInt(me.companyId);
+			let url = this.URL_GET_PARENT+ parseInt(me.companyId);
             axios.get(url).then (function(response){
                 me.brands = response.data;
             }).catch (function (error){
@@ -189,7 +194,7 @@ export default {
                 axios.put(this.URL_UPDATE,{
                     'Id': me.modelo.id,
 					'Description':me.modelo.description,					
-					'VehicleBrandId':me.modelo.vehicleBrandId
+					'ParentId':me.modelo.parentId
                 }).then(function(response){
                      me.close();
                      me.get();   
@@ -204,7 +209,7 @@ export default {
 				let me = this;
                 axios.post(this.URL_CREATE,{
                     'Description':me.modelo.description,
-                    'VehicleBrandId':me.modelo.vehicleBrandId
+                    'ParentId':me.modelo.parentId
                 }).then(function(response){
                      me.close();
                      me.get();   
@@ -259,7 +264,7 @@ export default {
 		edit(objeto) {		
 			 this.modelo.id = objeto.id; 
 			 this.modelo.description= objeto.description;
-			 this.modelo.vehicleBrandId = objeto.vehicleBrandId;
+			 this.modelo.parentId = objeto.parentId;
 			 this.dialogFormVisible = true;
 			 this.editedIndex=0;
 		},
@@ -270,7 +275,7 @@ export default {
         clean(){
             this.modelo.id="";
 			this.modelo.description="";
-			this.modelo.vehicleBrandId=null;
+			this.modelo.parentId=null;
             this.editedIndex=-1;
 		}
             			  	

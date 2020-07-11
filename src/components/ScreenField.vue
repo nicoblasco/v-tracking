@@ -34,6 +34,13 @@
             v-model="field.defaultValue"
           />
         </el-col>
+        <el-col :xs="24" :sm="12" :md="4" :lg="2" :xl="2">
+          <input
+            placeholder="Orden"
+            type="number"
+            v-model="field.orden"
+          />
+        </el-col>        
         <el-col :xs="2" :sm="2" :md="2" :lg="1" :xl="1" v-if="!isinvisible">
           <el-button type="danger"  icon="el-icon-delete" v-on:click="$emit('deletefield')"></el-button>
         </el-col>        
@@ -51,6 +58,7 @@ export default {
         fieldName: String,
         enabled: Boolean,        
         visible: Boolean,
+        orden: Number,
         defaultValue: String,
         systemScreenId: Number
       },

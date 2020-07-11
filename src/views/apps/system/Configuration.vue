@@ -609,6 +609,7 @@ export default {
         name: null,
         required: false,
         fieldName: null,
+        orden: null,
         enabled: false,        
         visible: false,
         defaultValue: null,
@@ -666,6 +667,9 @@ export default {
       if (item == null || item.description == null) return;
 
       let me = this;
+      let orden = item.orden;
+      if (item.orden!=null)
+        orden = parseInt(item.orden);
 
       axios
         .post(this.URL_CREATE_SCREEN, {
@@ -673,7 +677,7 @@ export default {
           Enabled: item.enabled,
           IsDefault: item.isDefault,
           ParentId: item.parentId,
-          Orden: item.orden,
+          Orden: orden,
           Entity: item.entity,
           Path: item.path,
           Icon: item.icon
@@ -732,7 +736,7 @@ export default {
             Enabled: element.enabled,
             IsDefault: element.isDefault,
             ParentId: element.parentId,
-            Orden: element.orden,
+            Orden: parseInt( element.orden),
             Entity: element.entity,
             Path: element.path,
             Icon: element.icon,
@@ -769,6 +773,7 @@ export default {
             Name: element.name,
             Required: element.required,
             FieldName: element.fieldName,
+            Orden: parseInt( element.orden),
             Enabled: element.enabled,
             Visible: element.visible,
             DefaultValue: element.defaultValue,

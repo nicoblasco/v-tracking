@@ -70,7 +70,7 @@ Vue.config.productionTip = false
 
 
 //axios.defaults.baseURL ='http://104.41.24.57/'
-axios.defaults.baseURL ='http://localhost:51397/'
+axios.defaults.baseURL ='http://localhost:64440/'
 
 /* ═ ═ ═ ═ ═ ═ ═ ═ ═ ═ ═ *\
 |  THIRD PARTS COMPONENTS |

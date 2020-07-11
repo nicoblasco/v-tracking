@@ -10,7 +10,7 @@
 		<div class="box grow scrollable align-vertical side-box box-right">
 			<div class="align-vertical-middle wrapper">
 				<div class="image-login">
-					<img style="width: 20%;" src="@/assets/images/logo.png" alt="logo-left"/>
+					<img style="width: 20%;" src="@/assets/images/logo.jpg" alt="logo-left"/>
 				</div>				
 				<form class="form-box" @submit.prevent="ingresar" style="margin-top: 0px;">
 					<h2>Ingrese a su cuenta</h2>
@@ -114,7 +114,7 @@ export default {
 	}
 
 	.box-left {
-		background-image: url('../../../assets/images/autopista5.jpg');
+		background-image: url('../../../assets/images/sales1.jpg');
 		background-size: cover;
 		background-position: 50% 50%;
 

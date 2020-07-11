@@ -1,8 +1,6 @@
-<template>
-	<div class="page-vue-good-table scrollable only-y">
-
-		
-		<pageheader v-bind:path="this.$route.fullPath"></pageheader>
+<template>	
+	<div class="page-vue-good-table scrollable only-y">	
+		<pageheader v-bind:path="this.$route.path"></pageheader>
 
 		<div class="vue-good-table-box card-base card-shadow--medium">
 			<vue-good-table
@@ -71,17 +69,17 @@
 
 import axios from 'axios'
 export default {
-	name: 'VehicleBrand',
+	name: 'Common',
 	data(){
 		return {
-				URL_GET: 'api/VehicleBrands/',
-				URL_CREATE: 'api/VehicleBrands/Create',
-				URL_UPDATE: 'api/VehicleBrands/Update',
-				URL_DELETE: 'api/VehicleBrands/Delete',	
+				URL_GET: null,
+				URL_CREATE: null,
+				URL_UPDATE: null,
+				URL_DELETE: null,	
 				//Estan ordenados alfabeticamente
-				FIELD_DESCRIPTION: 0,
-				FIELD_ENABLED: 1,
-				FIELD_ID: 2,								
+				FIELD_DESCRIPTION: 1,
+				FIELD_ENABLED: 2,
+				FIELD_ID: 0,								
 				dialogFormVisible: false,
 				editedIndex: -1,
                 valida: 0,
@@ -102,17 +100,21 @@ export default {
         created () {			
 			try {
 				this.modelo = this.$route.meta.modelo;
-				this.companyId = this.$store.getters.user.CompanyId;
+				this.companyId = parseInt( this.$store.getters.user.CompanyId);
 				this.columns = this.$route.meta.columns;
+				this.URL_GET= this.$route.meta.URL_GET;
+				this.URL_CREATE= this.$route.meta.URL_CREATE;
+				this.URL_UPDATE= this.$route.meta.URL_UPDATE;
+				this.URL_DELETE= this.$route.meta.URL_DELETE;
 				this.screen= this.$store.getters.userProfile.role.screens.filter(x=>x.path===this.$route.fullPath)[0];			
 				if (this.screen !=null)
 				{
 					this.title = this.screen.description;
 					this.fields = this.screen.fields.slice().sort(function(a, b) {
-						var textA = a.fieldName.toUpperCase()
-						var textB = b.fieldName.toUpperCase()
+						var textA = a.orden
+						var textB = b.orden
 						return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
-						});				
+						});		
 					this.actions = this.screen.actions;	
 					this.get();
 				}
@@ -167,8 +169,7 @@ export default {
                 let me = this;
                 axios.put(this.URL_UPDATE,{
                     'Id': me.modelo.id,
-					'Description':me.modelo.description,
-					'CompanyId': me.companyId
+					'Description':me.modelo.description
                 }).then(function(response){
                      me.close();
                      me.get();   
@@ -182,7 +183,8 @@ export default {
             } else {
 				let me = this;
                 axios.post(this.URL_CREATE,{
-                    'Description':me.modelo.description
+					'Description':me.modelo.description,
+					'CompanyId': me.companyId					
                 }).then(function(response){
                      me.close();
                      me.get();   
